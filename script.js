@@ -18,6 +18,7 @@ function calculate() {
   errorMessage.hidden = valid;
   weightInput.setAttribute('aria-invalid', String(!valid));
   if (!valid) return;
+  weightInput.blur();
 
   const calories = weight * 26;
   values.calories.textContent = Math.round(calories).toLocaleString();
@@ -30,4 +31,9 @@ function calculate() {
 }
 
 calculateButton.addEventListener('click', calculate);
-weightInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') calculate(); });
+weightInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    calculate();
+  }
+});
