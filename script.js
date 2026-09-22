@@ -1,5 +1,5 @@
 const weightInput = document.querySelector('#weight');
-const calculateButton = document.querySelector('#calculate');
+const nutritionForm = document.querySelector('#nutrition-form');
 const errorMessage = document.querySelector('#error');
 
 const values = {
@@ -30,10 +30,7 @@ function calculate() {
   values.title.textContent = `Your guide at ${weight.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
 }
 
-calculateButton.addEventListener('click', calculate);
-weightInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    calculate();
-  }
+nutritionForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  calculate();
 });

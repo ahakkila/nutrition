@@ -39,16 +39,16 @@
       </section>
 
       <section class="calculator-card" aria-label="Nutrition calculator">
-        <div class="input-panel">
+        <form id="nutrition-form" class="input-panel">
           <label for="weight">Your weight</label>
           <div class="weight-input-wrap">
-            <input id="weight" type="number" inputmode="decimal" min="1" max="500" step="0.1" placeholder="70" autocomplete="off" aria-describedby="weight-help" />
+            <input id="weight" type="number" inputmode="decimal" enterkeyhint="done" min="1" max="500" step="0.1" placeholder="70" autocomplete="off" aria-describedby="weight-help" />
             <span>kg</span>
           </div>
           <p id="weight-help" class="input-help">Use your current weight in kilograms.</p>
-          <button id="calculate" type="button">Show my guide <span aria-hidden="true">→</span></button>
+          <button id="calculate" type="submit">Show my guide <span aria-hidden="true">→</span></button>
           <p id="error" class="error-message" role="alert" hidden>Enter a weight between 1 and 500 kg.</p>
-        </div>
+        </form>
 
         <div class="results-panel" aria-live="polite">
           <div class="results-heading">
