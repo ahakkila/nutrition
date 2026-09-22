@@ -15,6 +15,8 @@ Open `index.html` in a browser. No installation or build step is required.
 
 The site is static, so GitHub Pages can serve it directly.
 
+The current app version is shown in the footer as a semantic version and `YYYYMMDDhhmmss` build timestamp. Bump the version when a meaningful feature or behavior change is released; update the timestamp for each deployed build.
+
 ## Install on a phone
 
 After GitHub Pages is enabled, open the site on your phone over its `https://` URL. On iPhone, use **Share → Add to Home Screen**. On Android, use the browser menu and choose **Install app** or **Add to Home screen**. The app includes offline support after the first visit.
