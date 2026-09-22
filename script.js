@@ -1,6 +1,7 @@
 const weightInput = document.querySelector('#weight');
 const nutritionForm = document.querySelector('#nutrition-form');
 const errorMessage = document.querySelector('#error');
+const appVersion = document.querySelector('#app-version');
 
 const values = {
   calories: document.querySelector('#calories'),
@@ -34,3 +35,12 @@ nutritionForm.addEventListener('submit', (event) => {
   event.preventDefault();
   calculate();
 });
+
+fetch('./version.json')
+  .then((response) => response.json())
+  .then((revision) => {
+    appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
+  })
+  .catch(() => {
+    appVersion.textContent = 'v0.1.0';
+  });
