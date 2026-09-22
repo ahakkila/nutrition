@@ -14,3 +14,7 @@ Open `index.html` in a browser. No installation or build step is required.
 4. Select **Deploy from a branch**, choose `main` and `/ (root)`, then save.
 
 The site is static, so GitHub Pages can serve it directly.
+
+## Install on a phone
+
+After GitHub Pages is enabled, open the site on your phone over its `https://` URL. On iPhone, use **Share → Add to Home Screen**. On Android, use the browser menu and choose **Install app** or **Add to Home screen**. The app includes offline support after the first visit.
