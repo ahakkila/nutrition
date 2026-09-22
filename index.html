@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eaf3e9" />
+    <meta name="description" content="A simple daily nutrition guide based on your body weight." />
+    <title>Rooted — Daily nutrition guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="Rooted home">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>rooted</span>
+        </a>
+        <span class="header-note">A little guidance for every day</span>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Your daily baseline</p>
+          <h1 id="page-title">Nourish your<br /><em>everyday.</em></h1>
+          <p class="intro">Enter your weight and get a simple, steady starting point for your daily nutrition.</p>
+        </div>
+        <div class="leaf-art" aria-hidden="true">
+          <span class="stem"></span>
+          <span class="leaf leaf-one"></span>
+          <span class="leaf leaf-two"></span>
+          <span class="leaf leaf-three"></span>
+          <span class="leaf leaf-four"></span>
+        </div>
+      </section>
+
+      <section class="calculator-card" aria-label="Nutrition calculator">
+        <div class="input-panel">
+          <label for="weight">Your weight</label>
+          <div class="weight-input-wrap">
+            <input id="weight" type="number" inputmode="decimal" min="1" max="500" step="0.1" placeholder="70" autocomplete="off" aria-describedby="weight-help" />
+            <span>kg</span>
+          </div>
+          <p id="weight-help" class="input-help">Use your current weight in kilograms.</p>
+          <button id="calculate" type="button">Show my guide <span aria-hidden="true">→</span></button>
+          <p id="error" class="error-message" role="alert" hidden>Enter a weight between 1 and 500 kg.</p>
+        </div>
+
+        <div class="results-panel" aria-live="polite">
+          <div class="results-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-dot"></span> Your daily guide</p>
+              <h2 id="results-title">A good place to begin</h2>
+            </div>
+            <span class="results-weight" id="results-weight">— kg</span>
+          </div>
+
+          <div class="result-grid">
+            <article class="result-card calories-card">
+              <div class="result-icon" aria-hidden="true">☼</div>
+              <div><p class="result-label">Energy</p><p class="result-value"><span id="calories">—</span> <small>kcal</small></p></div>
+              <p class="result-note">daily calories</p>
+            </article>
+            <article class="result-card protein-card">
+              <div class="result-icon" aria-hidden="true">◒</div>
+              <div><p class="result-label">Protein</p><p class="result-value"><span id="protein">—</span> <small>g</small></p></div>
+              <p class="result-note">steady strength</p>
+            </article>
+            <article class="result-card fat-card">
+              <div class="result-icon" aria-hidden="true">◌</div>
+              <div><p class="result-label">Fat</p><p class="result-value"><span id="fat">—</span> <small>g</small></p></div>
+              <p class="result-note">daily balance</p>
+            </article>
+            <article class="result-card carbs-card">
+              <div class="result-icon" aria-hidden="true">⌁</div>
+              <div><p class="result-label">Carbs</p><p class="result-value"><span id="carbs">—</span> <small>g</small></p></div>
+              <p class="result-note">everyday energy</p>
+            </article>
+            <article class="result-card water-card">
+              <div class="result-icon" aria-hidden="true">▽</div>
+              <div><p class="result-label">Water</p><p class="result-value"><span id="water">—</span> <small>L</small></p></div>
+              <p class="result-note">a hydrated day</p>
+            </article>
+          </div>
+          <p class="formula-note">A simple baseline based on your body weight — adjust with how you feel.</p>
+        </div>
+      </section>
+
+      <footer class="site-footer"><span>Small steps. Deep roots.</span><span>For everyday guidance, not medical advice.</span></footer>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
