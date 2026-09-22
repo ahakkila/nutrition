@@ -36,11 +36,29 @@ nutritionForm.addEventListener('submit', (event) => {
   calculate();
 });
 
-fetch('./version.json')
-  .then((response) => response.json())
-  .then((revision) => {
+let loadedRevision;
+const revisionCheckInterval = 5 * 60 * 1000;
+
+async function checkForUpdates() {
+  try {
+    const response = await fetch(`./version.json?check=${Date.now()}`, { cache: 'no-store' });
+    const revision = await response.json();
+    const revisionKey = `${revision.version}:${revision.timestamp}`;
+
+    if (loadedRevision && revisionKey !== loadedRevision) {
+      window.location.reload();
+      return;
+    }
+
+    loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
-  })
-  .catch(() => {
-    appVersion.textContent = 'v0.1.0';
-  });
+  } catch {
+    if (!loadedRevision) appVersion.textContent = 'v0.1.0';
+  }
+}
+
+checkForUpdates();
+window.setInterval(checkForUpdates, revisionCheckInterval);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) checkForUpdates();
+});
