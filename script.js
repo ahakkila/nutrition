@@ -32,6 +32,15 @@ function getValidWeight(value) {
   return weight >= minimumWeight && weight <= maximumWeight ? weight : null;
 }
 
+function validateWeight(value) {
+  const weight = getValidWeight(value);
+  return {
+    weight,
+    valid: weight !== null,
+    message: weight === null ? getWeightError(value) : '',
+  };
+}
+
 function getWeightError(value) {
   if (value.trim() === '') {
     return 'Enter a whole-number weight between 30 and 250 kg, without leading zeros.';
@@ -63,9 +72,9 @@ function clearResults() {
 }
 
 function calculate({ persist = true } = {}) {
-  const weight = getValidWeight(weightInput.value);
-  const valid = weight !== null;
-  errorMessage.textContent = valid ? '' : getWeightError(weightInput.value);
+  const validation = validateWeight(weightInput.value);
+  const { weight, valid } = validation;
+  errorMessage.textContent = validation.message;
   errorMessage.hidden = valid;
   weightInput.setAttribute('aria-invalid', String(!valid));
   if (!valid) {
@@ -110,7 +119,7 @@ weightInput.addEventListener('input', () => {
   weightInput.setAttribute('aria-invalid', 'false');
 });
 
-weightInput.addEventListener('blur', calculate);
+weightInput.addEventListener('blur', () => calculate());
 
 profileInputs.forEach((profileInput) => {
   profileInput.addEventListener('change', () => {
@@ -180,7 +189,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.3.6';
+    if (!loadedRevision) appVersion.textContent = 'v0.3.7';
   }
 }
 
