@@ -8,6 +8,8 @@ const performanceNotes = document.querySelector('#performance-notes');
 const weightStorageKey = 'rooted-weight';
 const profileStorageKey = 'rooted-profile';
 const profileInputs = document.querySelectorAll('input[name="profile"]');
+const minimumWeight = 30;
+const maximumWeight = 250;
 
 const profiles = {
   balanced: { label: 'Balanced', calories: 22, protein: 1.4, fat: 0.75 },
@@ -24,9 +26,27 @@ const values = {
   title: document.querySelector('#results-title'),
 };
 
+function getValidWeight(value) {
+  if (!/^[1-9][0-9]*$/.test(value)) return null;
+  const weight = Number(value);
+  return weight >= minimumWeight && weight <= maximumWeight ? weight : null;
+}
+
+function getWeightError(value) {
+  const numericValue = Number(value);
+  if (Number.isFinite(numericValue) && numericValue < minimumWeight) {
+    return 'Weights below 30 kg are outside this calculator’s range. Children should use this only with parental and expert guidance.';
+  }
+  if (Number.isFinite(numericValue) && numericValue > maximumWeight) {
+    return 'Weights above 250 kg are outside this calculator’s range. Please consult a healthcare professional for individualized guidance.';
+  }
+  return 'Enter a whole-number weight between 30 and 250 kg, without leading zeros.';
+}
+
 function calculate({ persist = true } = {}) {
-  const weight = Number.parseFloat(weightInput.value);
-  const valid = Number.isFinite(weight) && weight >= 1 && weight <= 500;
+  const weight = getValidWeight(weightInput.value);
+  const valid = weight !== null;
+  errorMessage.textContent = valid ? '' : getWeightError(weightInput.value);
   errorMessage.hidden = valid;
   weightInput.setAttribute('aria-invalid', String(!valid));
   if (!valid) return;
@@ -88,8 +108,7 @@ try {
   }
 
   const savedWeight = window.localStorage.getItem(weightStorageKey);
-  const weight = Number.parseFloat(savedWeight);
-  if (savedWeight !== null && Number.isFinite(weight) && weight >= 1 && weight <= 500) {
+  if (savedWeight !== null && getValidWeight(savedWeight) !== null) {
     weightInput.value = savedWeight;
     calculate({ persist: false });
   }
@@ -131,7 +150,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.3.1';
+    if (!loadedRevision) appVersion.textContent = 'v0.3.4';
   }
 }
 

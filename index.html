@@ -42,7 +42,7 @@
         <form id="nutrition-form" class="input-panel">
           <label for="weight">Your weight</label>
           <div class="weight-input-wrap">
-            <input id="weight" type="number" inputmode="decimal" min="1" max="500" step="0.1" placeholder="70" autocomplete="off" aria-describedby="weight-help" />
+            <input id="weight" type="text" inputmode="numeric" min="30" max="250" pattern="[1-9][0-9]*" maxlength="3" placeholder="70" autocomplete="off" aria-describedby="weight-help" />
             <span>kg</span>
           </div>
           <fieldset class="profile-options">
@@ -60,7 +60,7 @@
           </fieldset>
           <p id="weight-help" class="input-help">Use your current weight in kilograms.</p>
           <button id="calculate" type="submit">Show my guide <span aria-hidden="true">→</span></button>
-          <p id="error" class="error-message" role="alert" hidden>Enter a weight between 1 and 500 kg.</p>
+          <p id="error" class="error-message" role="alert" hidden></p>
         </form>
 
         <div class="results-panel" aria-live="polite">
@@ -110,7 +110,7 @@
       <footer class="site-footer">
         <span>Small steps. Deep roots.</span>
         <span>For everyday guidance, not medical advice.</span>
-        <span id="app-version" aria-label="App version">v0.3.1 · loading revision</span>
+        <span id="app-version" aria-label="App version">v0.3.4 · loading revision</span>
       </footer>
     </main>
     <div id="update-toast" class="update-toast" role="status" aria-live="polite" hidden>
