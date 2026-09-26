@@ -4,6 +4,7 @@ const errorMessage = document.querySelector('#error');
 const appVersion = document.querySelector('#app-version');
 const weightStorageKey = 'rooted-weight';
 const profileStorageKey = 'rooted-profile';
+const profileInputs = document.querySelectorAll('input[name="profile"]');
 
 const profiles = {
   balanced: { label: 'Balanced', calories: 22, protein: 1.4, fat: 0.75 },
@@ -27,12 +28,13 @@ function calculate({ persist = true } = {}) {
   weightInput.setAttribute('aria-invalid', String(!valid));
   if (!valid) return;
   weightInput.blur();
-  const profile = profiles[document.querySelector('input[name="profile"]:checked').value];
+  const profileKey = document.querySelector('input[name="profile"]:checked').value;
+  const profile = profiles[profileKey];
 
   if (persist) {
     try {
       window.localStorage.setItem(weightStorageKey, weightInput.value);
-      window.localStorage.setItem(profileStorageKey, document.querySelector('input[name="profile"]:checked').value);
+      window.localStorage.setItem(profileStorageKey, profileKey);
     } catch {
       // Storage can be unavailable in private browsing or restricted contexts.
     }
@@ -54,6 +56,12 @@ function calculate({ persist = true } = {}) {
 nutritionForm.addEventListener('submit', (event) => {
   event.preventDefault();
   calculate();
+});
+
+profileInputs.forEach((profileInput) => {
+  profileInput.addEventListener('change', () => {
+    if (weightInput.value) calculate();
+  });
 });
 
 try {
@@ -89,7 +97,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.2.0';
+    if (!loadedRevision) appVersion.textContent = 'v0.2.1';
   }
 }
 
