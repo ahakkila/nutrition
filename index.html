@@ -100,17 +100,21 @@
             </article>
           </div>
           <p class="formula-note">A simple baseline based on your body weight — adjust with how you feel.</p>
+          <aside id="performance-notes" class="performance-notes" aria-label="Performance hydration notes" hidden>
+            <p><strong>Exercise &amp; heavy sweating</strong><span>Add 0.4–0.8 L of fluid per hour, especially for sessions longer than 1 hour.</span></p>
+            <p><strong>Prolonged heavy sweating</strong><span>Consider 300–600 mg of sodium per hour to replace electrolytes.</span></p>
+          </aside>
         </div>
       </section>
 
       <footer class="site-footer">
         <span>Small steps. Deep roots.</span>
         <span>For everyday guidance, not medical advice.</span>
-        <span id="app-version" aria-label="App version">v0.2.2 · loading revision</span>
+        <span id="app-version" aria-label="App version">v0.3.0 · loading revision</span>
       </footer>
     </main>
     <div id="update-toast" class="update-toast" role="status" aria-live="polite" hidden>
-      A new version is ready. Refreshing…
+      <button id="update-button" class="update-toast-action" type="button">New version available, click to update</button>
     </div>
     <script src="script.js"></script>
     <script>

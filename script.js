@@ -3,6 +3,8 @@ const nutritionForm = document.querySelector('#nutrition-form');
 const errorMessage = document.querySelector('#error');
 const appVersion = document.querySelector('#app-version');
 const updateToast = document.querySelector('#update-toast');
+const updateButton = document.querySelector('#update-button');
+const performanceNotes = document.querySelector('#performance-notes');
 const weightStorageKey = 'rooted-weight';
 const profileStorageKey = 'rooted-profile';
 const profileInputs = document.querySelectorAll('input[name="profile"]');
@@ -31,6 +33,7 @@ function calculate({ persist = true } = {}) {
   weightInput.blur();
   const profileKey = document.querySelector('input[name="profile"]:checked').value;
   const profile = profiles[profileKey];
+  performanceNotes.hidden = profileKey !== 'performance';
 
   if (persist) {
     try {
@@ -49,7 +52,7 @@ function calculate({ persist = true } = {}) {
   values.protein.textContent = Math.round(protein);
   values.fat.textContent = Math.round(fat);
   values.carbs.textContent = Math.round(carbs);
-  values.water.textContent = (weight / 30).toFixed(1);
+  values.water.textContent = ((weight * 30) / 1000).toFixed(1);
   values.weight.textContent = `${weight.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
   values.title.textContent = `${profile.label} guide at ${weight.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
 }
@@ -61,14 +64,27 @@ nutritionForm.addEventListener('submit', (event) => {
 
 profileInputs.forEach((profileInput) => {
   profileInput.addEventListener('change', () => {
-    if (weightInput.value) calculate();
+    performanceNotes.hidden = profileInput.value !== 'performance';
+    if (weightInput.value) {
+      calculate();
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(profileStorageKey, profileInput.value);
+    } catch {
+      // Storage can be unavailable in private browsing or restricted contexts.
+    }
   });
 });
+
+updateButton.addEventListener('click', () => window.location.reload());
 
 try {
   const savedProfile = window.localStorage.getItem(profileStorageKey);
   if (savedProfile && profiles[savedProfile]) {
     document.querySelector(`input[name="profile"][value="${savedProfile}"]`).checked = true;
+    performanceNotes.hidden = savedProfile !== 'performance';
   }
 
   const savedWeight = window.localStorage.getItem(weightStorageKey);
@@ -82,13 +98,10 @@ try {
 }
 
 let loadedRevision;
-let updateReloadTimer;
 const revisionCheckInterval = 5 * 60 * 1000;
 
 function showUpdateToast() {
   updateToast.hidden = false;
-  window.clearTimeout(updateReloadTimer);
-  updateReloadTimer = window.setTimeout(() => window.location.reload(), 1800);
 }
 
 async function checkForUpdates() {
@@ -105,7 +118,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.2.2';
+    if (!loadedRevision) appVersion.textContent = 'v0.3.0';
   }
 }
 
