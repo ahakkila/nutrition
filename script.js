@@ -3,6 +3,12 @@ const nutritionForm = document.querySelector('#nutrition-form');
 const errorMessage = document.querySelector('#error');
 const appVersion = document.querySelector('#app-version');
 const weightStorageKey = 'rooted-weight';
+const profileStorageKey = 'rooted-profile';
+
+const profiles = {
+  balanced: { label: 'Balanced', calories: 22, protein: 1.4, fat: 0.75 },
+  performance: { label: 'Performance', calories: 26, protein: 1.8, fat: 0.8 },
+};
 
 const values = {
   calories: document.querySelector('#calories'),
@@ -21,23 +27,28 @@ function calculate({ persist = true } = {}) {
   weightInput.setAttribute('aria-invalid', String(!valid));
   if (!valid) return;
   weightInput.blur();
+  const profile = profiles[document.querySelector('input[name="profile"]:checked').value];
 
   if (persist) {
     try {
       window.localStorage.setItem(weightStorageKey, weightInput.value);
+      window.localStorage.setItem(profileStorageKey, document.querySelector('input[name="profile"]:checked').value);
     } catch {
       // Storage can be unavailable in private browsing or restricted contexts.
     }
   }
 
-  const calories = weight * 26;
+  const calories = weight * profile.calories;
+  const protein = weight * profile.protein;
+  const fat = weight * profile.fat;
+  const carbs = (calories - (4 * protein) - (9 * fat)) / 4;
   values.calories.textContent = Math.round(calories).toLocaleString();
-  values.protein.textContent = Math.round(weight * 2);
-  values.fat.textContent = Math.round(calories / 30);
-  values.carbs.textContent = Math.round(weight * 2.55);
+  values.protein.textContent = Math.round(protein);
+  values.fat.textContent = Math.round(fat);
+  values.carbs.textContent = Math.round(carbs);
   values.water.textContent = (weight / 30).toFixed(1);
   values.weight.textContent = `${weight.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
-  values.title.textContent = `Your guide at ${weight.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
+  values.title.textContent = `${profile.label} guide at ${weight.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
 }
 
 nutritionForm.addEventListener('submit', (event) => {
@@ -46,6 +57,11 @@ nutritionForm.addEventListener('submit', (event) => {
 });
 
 try {
+  const savedProfile = window.localStorage.getItem(profileStorageKey);
+  if (savedProfile && profiles[savedProfile]) {
+    document.querySelector(`input[name="profile"][value="${savedProfile}"]`).checked = true;
+  }
+
   const savedWeight = window.localStorage.getItem(weightStorageKey);
   const weight = Number.parseFloat(savedWeight);
   if (savedWeight !== null && Number.isFinite(weight) && weight >= 1 && weight <= 500) {
@@ -73,7 +89,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.1.0';
+    if (!loadedRevision) appVersion.textContent = 'v0.2.0';
   }
 }
 

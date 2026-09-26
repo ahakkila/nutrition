@@ -28,6 +28,12 @@ label { display:block; margin-bottom:12px; font-size:.78rem; font-weight:700; le
 input { width:100%; padding:2px 0 8px; border:0; outline:0; color:var(--ink); background:transparent; font:600 2.3rem/1 "DM Sans",sans-serif; }
 input::placeholder { color:#8aa18e; }
 .weight-input-wrap span { padding-bottom:7px; color:var(--green); font-size:.95rem; font-weight:700; }
+.profile-options { margin:24px 0 0; padding:0; border:0; }
+.profile-options legend { margin-bottom:10px; font-size:.68rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; }
+.profile-choice-list { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.profile-choice { display:flex; align-items:center; gap:7px; margin:0; padding:9px 8px; border:1px solid #b8cdb9; border-radius:8px; color:#648072; background:rgba(255,255,255,.26); font-size:.74rem; font-weight:600; letter-spacing:0; text-transform:none; cursor:pointer; }
+.profile-choice:has(input:checked) { border-color:var(--green); color:var(--deep); background:rgba(255,255,255,.62); }
+.profile-choice input { width:auto; margin:0; padding:0; accent-color:var(--green); font:inherit; }
 .input-help { min-height:39px; margin:12px 0 23px; color:#648072; font-size:.78rem; line-height:1.5; }
 button { width:100%; padding:14px 15px; border:0; border-radius:10px; color:#fff; background:var(--deep); cursor:pointer; font:600 .86rem "DM Sans",sans-serif; transition:transform .2s, background .2s; }
 button:hover { background:var(--green); transform:translateY(-2px); }
