@@ -98,10 +98,23 @@ try {
 }
 
 let loadedRevision;
+let pendingUpdate;
 const revisionCheckInterval = 5 * 60 * 1000;
 
 function showUpdateToast() {
+  if (document.hidden) {
+    pendingUpdate = true;
+    return;
+  }
   updateToast.hidden = false;
+}
+
+if ('serviceWorker' in navigator) {
+  let hadController = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController) showUpdateToast();
+    hadController = true;
+  });
 }
 
 async function checkForUpdates() {
@@ -118,12 +131,18 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.3.0';
+    if (!loadedRevision) appVersion.textContent = 'v0.3.1';
   }
 }
 
 checkForUpdates();
 window.setInterval(checkForUpdates, revisionCheckInterval);
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) checkForUpdates();
+  if (!document.hidden) {
+    if (pendingUpdate) {
+      pendingUpdate = false;
+      showUpdateToast();
+    }
+    checkForUpdates();
+  }
 });
