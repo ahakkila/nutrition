@@ -99,7 +99,11 @@
     <script src="script.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then((registration) => registration.update())
+            .catch(() => {});
+        });
       }
     </script>
   </body>

@@ -2,6 +2,7 @@ const weightInput = document.querySelector('#weight');
 const nutritionForm = document.querySelector('#nutrition-form');
 const errorMessage = document.querySelector('#error');
 const appVersion = document.querySelector('#app-version');
+const weightStorageKey = 'rooted-weight';
 
 const values = {
   calories: document.querySelector('#calories'),
@@ -13,13 +14,21 @@ const values = {
   title: document.querySelector('#results-title'),
 };
 
-function calculate() {
+function calculate({ persist = true } = {}) {
   const weight = Number.parseFloat(weightInput.value);
   const valid = Number.isFinite(weight) && weight >= 1 && weight <= 500;
   errorMessage.hidden = valid;
   weightInput.setAttribute('aria-invalid', String(!valid));
   if (!valid) return;
   weightInput.blur();
+
+  if (persist) {
+    try {
+      window.localStorage.setItem(weightStorageKey, weightInput.value);
+    } catch {
+      // Storage can be unavailable in private browsing or restricted contexts.
+    }
+  }
 
   const calories = weight * 26;
   values.calories.textContent = Math.round(calories).toLocaleString();
@@ -35,6 +44,17 @@ nutritionForm.addEventListener('submit', (event) => {
   event.preventDefault();
   calculate();
 });
+
+try {
+  const savedWeight = window.localStorage.getItem(weightStorageKey);
+  const weight = Number.parseFloat(savedWeight);
+  if (savedWeight !== null && Number.isFinite(weight) && weight >= 1 && weight <= 500) {
+    weightInput.value = savedWeight;
+    calculate({ persist: false });
+  }
+} catch {
+  // Storage can be unavailable in private browsing or restricted contexts.
+}
 
 let loadedRevision;
 const revisionCheckInterval = 5 * 60 * 1000;

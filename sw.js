@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rooted-v1';
+const CACHE_NAME = 'rooted-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -26,13 +26,17 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const requestUrl = new URL(event.request.url);
+  const isRevisionCheck = requestUrl.pathname.endsWith('/version.json');
   event.respondWith(
-    fetch(event.request).then((response) => {
-      if (event.request.url.startsWith(self.location.origin)) {
+    fetch(event.request, isRevisionCheck ? { cache: 'no-store' } : undefined).then((response) => {
+      if (event.request.url.startsWith(self.location.origin) && !isRevisionCheck) {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
       }
       return response;
-    }).catch(() => caches.match(event.request))
+    }).catch(() => isRevisionCheck
+      ? caches.match(new URL('./version.json', self.registration.scope).toString())
+      : caches.match(event.request))
   );
 });
