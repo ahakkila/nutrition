@@ -39,10 +39,10 @@
       </section>
 
       <section class="calculator-card" aria-label="Nutrition calculator">
-        <form id="nutrition-form" class="input-panel">
+        <form id="nutrition-form" class="input-panel" novalidate>
           <label for="weight">Your weight</label>
           <div class="weight-input-wrap">
-            <input id="weight" type="text" inputmode="numeric" min="30" max="250" pattern="[1-9][0-9]*" maxlength="3" placeholder="70" autocomplete="off" aria-describedby="weight-help" />
+            <input id="weight" type="text" inputmode="numeric" min="30" max="250" maxlength="3" placeholder="70" autocomplete="off" aria-describedby="weight-help" />
             <span>kg</span>
           </div>
           <fieldset class="profile-options">
@@ -110,7 +110,7 @@
       <footer class="site-footer">
         <span>Small steps. Deep roots.</span>
         <span>For everyday guidance, not medical advice.</span>
-        <span id="app-version" aria-label="App version">v0.3.4 · loading revision</span>
+        <span id="app-version" aria-label="App version">v0.3.5 · loading revision</span>
       </footer>
     </main>
     <div id="update-toast" class="update-toast" role="status" aria-live="polite" hidden>

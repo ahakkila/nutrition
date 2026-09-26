@@ -33,7 +33,16 @@ function getValidWeight(value) {
 }
 
 function getWeightError(value) {
+  if (value.trim() === '') {
+    return 'Enter a whole-number weight between 30 and 250 kg, without leading zeros.';
+  }
   const numericValue = Number(value);
+  if (/[.,]/.test(value)) {
+    return 'Decimal weights are not supported. Enter a whole-number weight between 30 and 250 kg.';
+  }
+  if (/^0[0-9]/.test(value)) {
+    return 'Leading zeros are not supported. Enter a whole-number weight between 30 and 250 kg.';
+  }
   if (Number.isFinite(numericValue) && numericValue < minimumWeight) {
     return 'Weights below 30 kg are outside this calculator’s range. Children should use this only with parental and expert guidance.';
   }
@@ -43,13 +52,26 @@ function getWeightError(value) {
   return 'Enter a whole-number weight between 30 and 250 kg, without leading zeros.';
 }
 
+function clearResults() {
+  values.calories.textContent = '—';
+  values.protein.textContent = '—';
+  values.fat.textContent = '—';
+  values.carbs.textContent = '—';
+  values.water.textContent = '—';
+  values.weight.textContent = '— kg';
+  values.title.textContent = 'A good place to begin';
+}
+
 function calculate({ persist = true } = {}) {
   const weight = getValidWeight(weightInput.value);
   const valid = weight !== null;
   errorMessage.textContent = valid ? '' : getWeightError(weightInput.value);
   errorMessage.hidden = valid;
   weightInput.setAttribute('aria-invalid', String(!valid));
-  if (!valid) return;
+  if (!valid) {
+    clearResults();
+    return;
+  }
   weightInput.blur();
   const profileKey = document.querySelector('input[name="profile"]:checked').value;
   const profile = profiles[profileKey];
@@ -80,6 +102,12 @@ function calculate({ persist = true } = {}) {
 nutritionForm.addEventListener('submit', (event) => {
   event.preventDefault();
   calculate();
+});
+
+weightInput.addEventListener('input', () => {
+  if (getValidWeight(weightInput.value) === null) clearResults();
+  errorMessage.hidden = true;
+  weightInput.setAttribute('aria-invalid', 'false');
 });
 
 profileInputs.forEach((profileInput) => {
@@ -150,7 +178,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.3.4';
+    if (!loadedRevision) appVersion.textContent = 'v0.3.5';
   }
 }
 
