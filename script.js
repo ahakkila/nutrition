@@ -110,6 +110,8 @@ weightInput.addEventListener('input', () => {
   weightInput.setAttribute('aria-invalid', 'false');
 });
 
+weightInput.addEventListener('blur', calculate);
+
 profileInputs.forEach((profileInput) => {
   profileInput.addEventListener('change', () => {
     performanceNotes.hidden = profileInput.value !== 'performance';
@@ -178,7 +180,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.3.5';
+    if (!loadedRevision) appVersion.textContent = 'v0.3.6';
   }
 }
 

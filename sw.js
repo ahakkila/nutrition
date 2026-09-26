@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rooted-v10';
+const CACHE_NAME = 'rooted-v11';
 const APP_SHELL = [
   './',
   './index.html',
