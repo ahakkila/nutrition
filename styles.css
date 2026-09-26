@@ -54,5 +54,6 @@ h2 { margin:0; font-size:1.65rem; }
 .formula-note { margin:20px 0 0; color:#8b9b91; font-size:.68rem; }
 .site-footer { display:flex; justify-content:space-between; gap:18px; padding:24px 4px 0; color:#9aaba0; font-size:.67rem; letter-spacing:.03em; }
 .site-footer span:last-child { color:#aebbb1; white-space:nowrap; }
+.update-toast { position:fixed; right:24px; bottom:24px; z-index:10; max-width:300px; padding:13px 16px; border:1px solid #b8d0ba; border-radius:12px; color:var(--deep); background:#f2f8f0; box-shadow:0 10px 30px rgba(32,73,54,.16); font-size:.8rem; font-weight:600; }
 @media (max-width:760px) { .page-shell{width:min(100% - 28px, 570px);padding-top:20px}.header-note{display:none}.hero{min-height:300px;padding:55px 14px 30px}.leaf-art{position:absolute;right:0;opacity:.45;transform:scale(.78) rotate(7deg)}.hero-copy{position:relative;z-index:1}.calculator-card{grid-template-columns:1fr}.input-panel{padding:28px}.results-panel{padding:30px 20px 24px}.result-grid{gap:8px}.result-card{padding:14px 11px}.result-value{font-size:1.45rem}.site-footer{gap:20px;flex-direction:column} }
 @media (max-width:390px) { .hero{padding-left:5px}.result-grid{grid-template-columns:repeat(2,1fr)}.calories-card,.protein-card,.fat-card,.carbs-card,.water-card{grid-column:span 1}.water-card{grid-column:span 2} }

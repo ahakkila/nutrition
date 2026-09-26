@@ -2,6 +2,7 @@ const weightInput = document.querySelector('#weight');
 const nutritionForm = document.querySelector('#nutrition-form');
 const errorMessage = document.querySelector('#error');
 const appVersion = document.querySelector('#app-version');
+const updateToast = document.querySelector('#update-toast');
 const weightStorageKey = 'rooted-weight';
 const profileStorageKey = 'rooted-profile';
 const profileInputs = document.querySelectorAll('input[name="profile"]');
@@ -81,7 +82,14 @@ try {
 }
 
 let loadedRevision;
+let updateReloadTimer;
 const revisionCheckInterval = 5 * 60 * 1000;
+
+function showUpdateToast() {
+  updateToast.hidden = false;
+  window.clearTimeout(updateReloadTimer);
+  updateReloadTimer = window.setTimeout(() => window.location.reload(), 1800);
+}
 
 async function checkForUpdates() {
   try {
@@ -90,14 +98,14 @@ async function checkForUpdates() {
     const revisionKey = `${revision.version}:${revision.timestamp}`;
 
     if (loadedRevision && revisionKey !== loadedRevision) {
-      window.location.reload();
+      if (!document.hidden) showUpdateToast();
       return;
     }
 
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.2.1';
+    if (!loadedRevision) appVersion.textContent = 'v0.2.2';
   }
 }
 
