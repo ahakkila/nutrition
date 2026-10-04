@@ -1,5 +1,9 @@
-# Storage sync and weight history: implementation spec
+# Storage sync and weight history: original 0.4.x spec
 
+> **Status:** Implemented and superseded in part by v0.5.0. This document
+> preserves the original brief, not a pending task list. For current behavior
+> and verification status, read [session-state.md](session-state.md).
+>
 > **Follow-up:** [storage-sync-v2.md](storage-sync-v2.md) replaces the pull and push steps
 > below with the change feed and batch writes.
 
@@ -52,7 +56,8 @@ reference; the parts that matter here are:
   allowed, 412 version conflict, 413 value too large, 429 rate limited,
   507 record limit reached.
 - Limits: 64 KiB per value, and a per-user record limit that the operator sets
-  (it will be raised to 5000, roughly 13 years of daily entries).
+  (the original operator setup requested 5000, roughly 13 years of daily entries;
+  the live quota has not been rechecked).
 
 The server's `updatedAt` is the time it received the write. Do **not** use it
 to decide which edit is newer, because an offline edit can reach the server
@@ -78,8 +83,9 @@ At startup, before anything else reads storage:
    show a short "This sync link is not valid" message.
 
 The QR code encodes `https://nutrition.hakkila.fi/#storage-token=dst_…`.
-Opening it in the installed PWA or the browser both work, since they share
-the origin's localStorage.
+Open the link in the context where the app will be used. Browser and installed
+PWA storage sharing depends on the platform; do not assume a token opened in
+the browser is also available in the installed app.
 
 Token handling rules:
 
@@ -244,7 +250,11 @@ opening `http://localhost:5500/#storage-token=<token>`.
 
 Use two browser profiles to test sync between two devices.
 
-## 8. Acceptance checklist
+## 8. Original manual acceptance checklist
+
+These unchecked boxes are historical acceptance criteria, not an implementation
+backlog. Automated coverage and the user's manual results are recorded in
+[session-state.md](session-state.md).
 
 - [ ] With no token, behaviour is unchanged, apart from the new history section.
 - [ ] Opening the app with `#storage-token=…` stores the token and leaves a
@@ -290,7 +300,9 @@ The owner's subsequent request to reduce unnecessary syncing adds these changes:
   up" with a pointer to datastorage, which backs the data up daily.
 - Bump the version to `0.4.0` and run `node revision.js` before committing.
 
-## Operator steps outside this repo (done in datastorage)
+## Original operator setup commands (outside this repo)
+
+These are reference commands, not instructions to issue new credentials.
 
 ```bash
 ./admin app add --name nutrition --origin https://nutrition.hakkila.fi --max-records 5000

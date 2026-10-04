@@ -7,15 +7,19 @@ for the deployed release, implementation details and workspace state.
 
 ## Run locally
 
-Open `index.html` in a browser. No installation or build step is required.
+No installation or build step is required. For local development, serve this
+directory over HTTP, for example `python3 -m http.server 5500`, and open
+`http://localhost:5500`. Localhost supports service workers and offline testing.
+Opening `index.html` directly can show the calculator, but does not provide the
+HTTP origin needed for service workers or local API sync.
 
 ## Publish to the VPS
 
 Rooted runs directly on the shared nginx VPS, with no Node server, container,
-database, or systemd app service. See [the migration plan](docs/deployment.md)
+database, or systemd app service. See [the deployment runbook and migration history](docs/deployment.md)
 for the comparison with neighboring projects and the cutover checklist.
 
-Copy `deploy.conf.example` to `~/.config/vps-deploy/nutrition.env`, set the
+For a new host, copy `deploy.conf.example` to `~/.config/vps-deploy/nutrition.env`, set the
 hosts, deploy directory, domain and certificate email, and create the domain's
 DNS record pointing to the VPS. Settings are literal `KEY=value` lines, without
 quotes or shell expansion. Then run from a terminal:
@@ -35,7 +39,8 @@ to override the settings file.
 
 The current app version is shown in the footer as a semantic version and `YYYYMMDDhhmmss` build timestamp. Bump the version when a meaningful feature or behavior change is released; update the timestamp for each deployed build.
 
-To create a timestamped revision, run the helper before committing:
+VPS deployment updates the build timestamp automatically in the uploaded copy.
+For a local revision, you can optionally run the helper before committing:
 
 ```bash
 node revision.js

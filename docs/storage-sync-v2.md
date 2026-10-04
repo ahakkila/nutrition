@@ -1,12 +1,17 @@
 # Storage sync v2: change feed and batch writes
 
+> **Status:** Implemented in v0.5.0 and deployed on 2026-10-02. The design
+> below preserves the original proposal; pseudocode is illustrative, with the
+> final checkpoint safeguards described under Release. Current verification
+> status and user preferences are in [session-state.md](session-state.md).
+
 This is a follow-up to [storage-sync.md](storage-sync.md). Sync already works.
 This change makes it cheaper, using two new datastorage endpoints. Behaviour
 for the user stays the same.
 
 ## Why
 
-`storage.js` today:
+`storage.js` before v0.5.0:
 
 - **`pull()`:**
   - `GET`s `settings/current`;
@@ -60,7 +65,7 @@ The request needs `Content-Type: application/json`:
 
 - A batch holds at most **100 writes** and **1 MiB**.
 - `ifMatch` (a version number) and `ifNoneMatch: "*"` mean the same as the
-  headers `push()` sends today.
+  headers used by the earlier individual-write client.
 - The response is 200 with one result per write, in the same order. Each
   result carries the status a single `PUT` would have returned:
 
@@ -89,7 +94,7 @@ The request needs `Content-Type: application/json`:
 
 ### `request()`
 
-`request()` currently builds collection paths from `name`. Let it take a
+Before v0.5.0, `request()` built collection paths from `name`. The v0.5.0 implementation takes a
 path instead:
 
 - `pull` uses `/changes?since=…&limit=200`;
@@ -159,7 +164,7 @@ pushDirty(id):
             412: conflict = true
             507: storageFull = true                // the name stays dirty
             400 or 413: a client bug; the name stays dirty
-                        console.warn the status and error, never the token
+                        console.warn only the status, never server error text or the token
         persistSync()
     return { conflict, storageFull }
 ```
@@ -199,7 +204,7 @@ status:
 
 ## Tests (`tests/storage.test.cjs`)
 
-Update the fake server to serve `/changes` and `/batch` with the semantics
+The fake server implements `/changes` and `/batch` with the semantics
 above:
 
 - a global `seq` counter bumped on every write;
@@ -207,27 +212,27 @@ above:
   `limit`;
 - `/batch` returns per-write statuses.
 
-Cover these cases:
+Implemented automated coverage:
 
-- [ ] A first sync with 250 remote history entries uses two `/changes`
+- [x] A first sync with 250 remote history entries uses two `/changes`
       requests, not 250 `GET`s.
-- [ ] A first sync with 150 local-only history entries uploads them in two
+- [x] A first sync with 150 local-only history entries uploads them in two
       `/batch` requests and leaves no dirty names.
-- [ ] A sync with nothing new makes exactly one request, `/changes`, and no
+- [x] A sync with nothing new makes exactly one request, `/changes`, and no
       `/batch`.
-- [ ] A 412 on one write in a batch:
+- [x] A 412 on one write in a batch:
   - other writes in the batch are still applied;
   - a second pull and push resolves it;
   - a newer remote value wins, and a newer local value is re-uploaded with
     the new version.
-- [ ] A local edit made while a batch is in flight stays dirty and is sent on
+- [x] A local edit made while a batch is in flight stays dirty and is sent on
       the next run.
-- [ ] A result with 507 shows "Sync storage full" and keeps the name dirty.
-- [ ] Disconnecting or a new token clears `rooted-sync-cursor`, so the next
+- [x] A result with 507 shows "Sync storage full" and keeps the name dirty.
+- [x] Disconnecting or a new token clears `rooted-sync-cursor`, so the next
       sync starts from 0.
-- [ ] Cut the connection between `/changes` pages. The cursor already stored
+- [x] Cut the connection between `/changes` pages. The cursor already stored
       is valid, and the next sync continues from it without losing changes.
-- [ ] Malformed responses are rejected without changing local data: a
+- [x] Malformed responses are rejected without changing local data: a
       `cursor` lower than `since`, a missing `changes` array, or a results
       array of the wrong length.
 
@@ -256,13 +261,14 @@ is validated before any successful result clears dirty state. Cursors and
 versions must fit JavaScript's safe integer range. Server error text is not
 logged, to avoid accidentally exposing credentials or stored values.
 
-The release is prepared as `0.5.0`. Automated tests include reloads after a
+The release was deployed as `0.5.0` on 2026-10-02. Automated tests include reloads after a
 cut between bootstrap pages, failed writes to every checkpoint component,
 partial settings persistence, large history/backlog request counts, mixed batch
-results and malformed responses. Actual authenticated production sync is a
-separate device check after deployment.
+results and malformed responses. Manual verification status is tracked in the session handoff.
 
-- Bump the version to `0.5.0` (or the next minor) and run `node revision.js`.
+- For future releases, bump the semantic version for meaningful changes. VPS
+  deployment stamps the uploaded build automatically; `node revision.js` is
+  optional for updating the local source timestamp.
 - The order matters:
   1. `make deploy` in datastorage, so the database migrates and the endpoints
      go live.

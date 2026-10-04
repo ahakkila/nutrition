@@ -1,7 +1,7 @@
-# Session handoff — 2026-10-02
+# Session handoff — 2026-10-04
 
 Read this file first when resuming work on Rooted. The latest user request was
-to record the state after deployment; there is no outstanding implementation
+to record unfinished topics for the next session; there is no outstanding implementation
 request or permission to issue production credentials.
 
 ## Current release
@@ -73,27 +73,50 @@ request or permission to issue production credentials.
   operation and persistence across closing/reopening have not been tested.
   This report does not verify linked-device sync.
 
-- Last `make check test`: syntax checks and ShellCheck passed; all 49 tests
+- Last `make check test` (2026-10-04): syntax checks passed; all 49 tests
   passed (45 storage tests, 4 UI integration tests). `git diff --check` passed.
 - Tests use an in-memory API implementing sequences, pagination, conditional
   batch writes and per-write statuses. They cover large backlogs, mixed conflicts,
   interrupted bootstrap across reload, each checkpoint write failure, partial
   settings saves, malformed responses, revocation, offline convergence and UI.
 - Browser automation was unavailable: discovery returned no browsers and both
-  Chrome and in-app tab creation failed. Visual/phone/offline checks remain
-  unverified; no need to repeat automated checks absent new changes.
-- Before the user-requested commit/push on 2026-10-04, no commits or pushes had
-  been made by the agent. The pending release contained the prior
-  deployment work plus storage releases as uncommitted changes. Do not discard
-  them. Tracked modifications: README.md, index.html, script.js, styles.css,
-  sw.js, version.json. Untracked paths: Makefile, deploy.conf.example, docs/,
-  scripts/, storage.js, tests/. These paths are included in the requested
-  release commit. Review current git status before changing anything.
+  Chrome and in-app tab creation failed. The user's phone report above is the
+  available manual evidence; no need to repeat automated checks absent changes.
+- Release implementation, deployment tooling, tests and docs were committed
+  and pushed to `origin/main` on 2026-10-04: `27e9e37` ("Add local-first weight
+  history sync and VPS deployment"). The worktree was clean after pushing.
+  This handoff update is a subsequent documentation change; check git status
+  before assuming it has been committed. A Git push does not deploy to the VPS.
+- Repository documentation review (2026-10-04): historical sync specs are now
+  explicitly labeled, implemented v2 test criteria are checked, and revision
+  stamping/local serving instructions match the tooling. No runtime changes
+  were needed. Deployment observations retain their original dates; this review
+  did not recheck live hosting or GitHub Pages settings.
 - A temporary local port-5500 server used during implementation was stopped.
 - Sandbox network/DNS attempts fail here. Important network checks should be
   retried using normal tool escalation, not reported as a production outage.
 
 ## References / next steps
+
+Start a new session by reading this handoff and checking `git status` and the
+latest commit. Recap the current release and the open items below; do not treat
+historical deployment checklists or unchecked v2 spec boxes as unfinished code.
+
+### Open topics
+
+- Phone offline operation and persistence across closing/reopening have not
+  been tested. The user has received a checklist; await their results or a
+  request to continue verification.
+- Multiple-entry history display has not been manually checked because the
+  user does not yet have multiple entries. Check naturally once entries exist;
+  automated history rendering tests already pass.
+- GitHub Pages status and whether to retire the old site remain unresolved.
+  Do not disable it without a user request. VPS hosting is already live.
+- Certificate renewal dry run and an actual rollback exercise are listed in
+  the deployment runbook, but completion has not been recorded. These are
+  operator verification topics, not reported failures.
+- No new feature implementation is requested. Daily history deletion remains
+  outside the implemented scope; it would require offline deletion tombstones.
 
 - User preference (2026-10-03): linked-device verification is deferred to the
   backlog. Do not suggest it in routine recaps or next-step plans; mention it

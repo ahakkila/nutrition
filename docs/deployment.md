@@ -1,4 +1,8 @@
-# VPS migration plan
+# VPS deployment runbook and migration history
+
+For current release and unfinished checks, read [session-state.md](session-state.md).
+The initial inspection and cutover steps below are historical; provisioning and
+VPS migration were completed on 2026-10-02.
 
 ## Existing deployment paradigms
 
@@ -94,8 +98,9 @@ a valid HTTPS certificate and serves version `0.3.7`, timestamp `20261002194822`
 HTTP redirects to HTTPS, version metadata uses `no-store`, the service worker
 uses `no-cache`, and missing assets return 404.
 
-Phone installation/offline checks and a certificate renewal dry run remain
-operator checks before retiring the old site. GitHub Pages has not been disabled
+At initial cutover, phone installation/offline checks and a certificate renewal
+dry run remained operator checks. Later phone results and outstanding checks
+are recorded in [session-state.md](session-state.md). GitHub Pages has not been disabled
 by this migration tooling.
 
 Version `0.4.0` adds optional datastorage sync and local daily weight history.
