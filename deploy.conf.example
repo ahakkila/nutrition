@@ -1,0 +1,6 @@
+# Copy to ~/.config/vps-deploy/nutrition.env (keep machine settings out of git).
+ADMIN_HOST=admin@example.com
+DEPLOY_HOST=deploy@example.com
+DEPLOY_DIR=/var/www/nutrition
+DOMAIN=nutrition.example.com
+CERT_EMAIL=admin@example.com

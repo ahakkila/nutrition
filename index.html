@@ -107,15 +107,28 @@
         </div>
       </section>
 
+      <section class="history-card" aria-labelledby="history-title">
+        <div class="history-heading">
+          <h2 id="history-title">Weight history</h2>
+          <button id="history-toggle" type="button" aria-controls="weight-history-list" aria-expanded="false" hidden>Show all</button>
+        </div>
+        <p id="history-empty">Your saved daily weights will appear here.</p>
+        <ol id="weight-history-list" aria-label="Daily weights, newest first"></ol>
+      </section>
+
       <footer class="site-footer">
         <span>Small steps. Deep roots.</span>
         <span>For everyday guidance, not medical advice.</span>
-        <span id="app-version" aria-label="App version">v0.3.7 · loading revision</span>
+        <span class="sync-controls"><span id="sync-status" role="status" aria-live="polite">Sync off</span><button id="disconnect-sync" type="button" hidden>Disconnect sync</button></span>
+        <span id="last-synced" hidden></span>
+        <span id="storage-warning" role="status" aria-live="polite" hidden></span>
+        <span id="app-version" aria-label="App version">v0.5.0 · loading revision</span>
       </footer>
     </main>
     <div id="update-toast" class="update-toast" role="status" aria-live="polite" hidden>
       <button id="update-button" class="update-toast-action" type="button">New version available, click to update</button>
     </div>
+    <script src="storage.js"></script>
     <script src="script.js"></script>
     <script>
       if ('serviceWorker' in navigator) {

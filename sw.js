@@ -1,9 +1,10 @@
-const CACHE_NAME = 'rooted-v12';
+const CACHE_NAME = 'rooted-v15';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './script.js',
+  './storage.js',
   './version.json',
   './manifest.webmanifest',
   './icons/icon-192.png',
@@ -27,6 +28,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
   const isRevisionCheck = requestUrl.pathname.endsWith('/version.json');
   event.respondWith(
     fetch(event.request, isRevisionCheck ? { cache: 'no-store' } : undefined).then((response) => {

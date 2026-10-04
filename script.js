@@ -5,8 +5,6 @@ const appVersion = document.querySelector('#app-version');
 const updateToast = document.querySelector('#update-toast');
 const updateButton = document.querySelector('#update-button');
 const performanceNotes = document.querySelector('#performance-notes');
-const weightStorageKey = 'rooted-weight';
-const profileStorageKey = 'rooted-profile';
 const profileInputs = document.querySelectorAll('input[name="profile"]');
 const minimumWeight = 30;
 const maximumWeight = 250;
@@ -71,7 +69,7 @@ function clearResults() {
   values.title.textContent = 'A good place to begin';
 }
 
-function calculate({ persist = true } = {}) {
+function calculate({ persist = true, recordHistory = true } = {}) {
   const validation = validateWeight(weightInput.value);
   const { weight, valid } = validation;
   errorMessage.textContent = validation.message;
@@ -81,18 +79,13 @@ function calculate({ persist = true } = {}) {
     clearResults();
     return;
   }
-  weightInput.blur();
+  if (persist) weightInput.blur();
   const profileKey = document.querySelector('input[name="profile"]:checked').value;
   const profile = profiles[profileKey];
   performanceNotes.hidden = profileKey !== 'performance';
 
   if (persist) {
-    try {
-      window.localStorage.setItem(weightStorageKey, weightInput.value);
-      window.localStorage.setItem(profileStorageKey, profileKey);
-    } catch {
-      // Storage can be unavailable in private browsing or restricted contexts.
-    }
+    window.RootedStorage.save(weight, profileKey, { recordHistory });
   }
 
   const calories = weight * profile.calories;
@@ -125,35 +118,77 @@ profileInputs.forEach((profileInput) => {
   profileInput.addEventListener('change', () => {
     performanceNotes.hidden = profileInput.value !== 'performance';
     if (weightInput.value) {
-      calculate();
+      calculate({ recordHistory: false });
       return;
     }
 
-    try {
-      window.localStorage.setItem(profileStorageKey, profileInput.value);
-    } catch {
-      // Storage can be unavailable in private browsing or restricted contexts.
-    }
+    window.RootedStorage.save(null, profileInput.value, { recordHistory: false });
   });
 });
 
 updateButton.addEventListener('click', () => window.location.reload());
 
-try {
-  const savedProfile = window.localStorage.getItem(profileStorageKey);
-  if (savedProfile && profiles[savedProfile]) {
-    document.querySelector(`input[name="profile"][value="${savedProfile}"]`).checked = true;
-    performanceNotes.hidden = savedProfile !== 'performance';
+const historyList = document.querySelector('#weight-history-list');
+const historyToggle = document.querySelector('#history-toggle');
+const historyEmpty = document.querySelector('#history-empty');
+let weightHistory = {};
+let showAllHistory = false;
+function renderHistory(history) {
+  weightHistory = history;
+  const dates = Object.keys(history).sort().reverse();
+  historyList.replaceChildren();
+  historyEmpty.hidden = dates.length > 0;
+  historyToggle.hidden = dates.length <= 30;
+  historyToggle.textContent = showAllHistory ? 'Show last 30' : 'Show all';
+  historyToggle.setAttribute('aria-expanded', String(showAllHistory));
+  for (const date of showAllHistory ? dates : dates.slice(0, 30)) {
+    const item = document.createElement('li');
+    const time = document.createElement('time');
+    time.dateTime = date;
+    // Noon local time avoids UTC shifting a calendar date on display.
+    time.textContent = new Date(`${date}T12:00:00`).toLocaleDateString(undefined, {
+      year: 'numeric', month: 'short', day: 'numeric',
+    });
+    const weight = document.createElement('span');
+    weight.textContent = `${history[date].weight} kg`;
+    item.append(time, weight);
+    historyList.append(item);
   }
-
-  const savedWeight = window.localStorage.getItem(weightStorageKey);
-  if (savedWeight !== null && getValidWeight(savedWeight) !== null) {
-    weightInput.value = savedWeight;
-    calculate({ persist: false });
-  }
-} catch {
-  // Storage can be unavailable in private browsing or restricted contexts.
 }
+historyToggle.addEventListener('click', () => {
+  showAllHistory = !showAllHistory;
+  renderHistory(weightHistory);
+});
+const disconnectButton = document.querySelector('#disconnect-sync');
+disconnectButton.addEventListener('click', () => window.RootedStorage.disconnect());
+window.RootedStorage.init({
+  profiles,
+  onData({ settings, history }) {
+    if (settings) {
+      document.querySelector(`input[name="profile"][value="${settings.profile}"]`).checked = true;
+      performanceNotes.hidden = settings.profile !== 'performance';
+      weightInput.value = settings.weight === null ? '' : String(settings.weight);
+      if (settings.weight !== null) calculate({ persist: false });
+      else {
+        clearResults();
+        errorMessage.hidden = true;
+        weightInput.setAttribute('aria-invalid', 'false');
+      }
+    }
+    renderHistory(history);
+  },
+  onHistory: renderHistory,
+  onStatus({ connected, message, lastSynced, storageWarning }) {
+    document.querySelector('#sync-status').textContent = message;
+    disconnectButton.hidden = !connected;
+    const lastSync = document.querySelector('#last-synced');
+    lastSync.hidden = !connected || !lastSynced;
+    lastSync.textContent = lastSynced ? `Last synced ${new Date(lastSynced).toLocaleString()}` : '';
+    const warning = document.querySelector('#storage-warning');
+    warning.hidden = !storageWarning;
+    warning.textContent = storageWarning || '';
+  },
+});
 
 let loadedRevision;
 let pendingUpdate;
@@ -189,7 +224,7 @@ async function checkForUpdates() {
     loadedRevision = revisionKey;
     appVersion.textContent = `v${revision.version} · ${revision.timestamp}`;
   } catch {
-    if (!loadedRevision) appVersion.textContent = 'v0.3.7';
+    if (!loadedRevision) appVersion.textContent = 'v0.5.0';
   }
 }
 
@@ -202,5 +237,6 @@ document.addEventListener('visibilitychange', () => {
       showUpdateToast();
     }
     checkForUpdates();
+    window.RootedStorage.sync();
   }
 });
